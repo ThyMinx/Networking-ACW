@@ -1,0 +1,43 @@
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\bin\Debug\Location.exe.config
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\bin\Debug\Location.exe
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\bin\Debug\Location.pdb
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\obj\Debug\Location.csprojResolveAssemblyReference.cache
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\obj\Debug\Location.csproj.CoreCompileInputs.cache
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\obj\Debug\Location.exe
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Location\Location\obj\Debug\Location.pdb
+C:\Temp\Location\Location\bin\Debug\Location.exe.config
+C:\Temp\Location\Location\bin\Debug\Location.exe
+C:\Temp\Location\Location\bin\Debug\Location.pdb
+C:\Temp\Location\Location\obj\Debug\Location.csprojResolveAssemblyReference.cache
+C:\Temp\Location\Location\obj\Debug\Location.csproj.CoreCompileInputs.cache
+C:\Temp\Location\Location\obj\Debug\Location.exe
+C:\Temp\Location\Location\obj\Debug\Location.pdb
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\bin\Debug\Location.exe.config
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\bin\Debug\Location.exe
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\bin\Debug\Location.pdb
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\obj\Debug\Location.csprojResolveAssemblyReference.cache
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\obj\Debug\Location.csproj.CoreCompileInputs.cache
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\obj\Debug\Location.exe
+\\cna-cifs.adir.hull.ac.uk\home5\528\528950\Desktop\NET - RETRY\Attempt3\Location\Location\obj\Debug\Location.pdb
+C:\Temp\Attempt5\Attempt4\Location\Location\bin\Debug\Location.exe.config
+C:\Temp\Attempt5\Attempt4\Location\Location\bin\Debug\Location.exe
+C:\Temp\Attempt5\Attempt4\Location\Location\bin\Debug\Location.pdb
+C:\Temp\Attempt5\Attempt4\Location\Location\obj\Debug\Location.csprojResolveAssemblyReference.cache
+C:\Temp\Attempt5\Attempt4\Location\Location\obj\Debug\Location.csproj.CoreCompileInputs.cache
+C:\Temp\Attempt5\Attempt4\Location\Location\obj\Debug\Location.exe
+C:\Temp\Attempt5\Attempt4\Location\Location\obj\Debug\Location.pdb
+C:\Temp\Attempt6\Attempt4\Location\Location\bin\Debug\Location.exe.config
+C:\Temp\Attempt6\Attempt4\Location\Location\bin\Debug\Location.exe
+C:\Temp\Attempt6\Attempt4\Location\Location\bin\Debug\Location.pdb
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Location.csprojResolveAssemblyReference.cache
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Interface.baml
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Interface.g.cs
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Location_MarkupCompile.cache
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Location.g.resources
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Location.csproj.CoreCompileInputs.cache
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Location.exe
+C:\Temp\Attempt6\Attempt4\Location\Location\obj\Debug\Location.pdb
+C:\Temp\Location\Location\obj\Debug\Interface.baml
+C:\Temp\Location\Location\obj\Debug\Interface.g.cs
+C:\Temp\Location\Location\obj\Debug\Location_MarkupCompile.cache
+C:\Temp\Location\Location\obj\Debug\Location.g.resources

@@ -1,0 +1,53 @@
+﻿<Window x:Class="Location.Interface"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             ResizeMode="CanMinimize" Title="Location Client" WindowStartupLocation="CenterScreen"
+             Width="750" Height="300">
+    <Grid Background="AliceBlue">
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".75*"/>
+            <RowDefinition Height=".75*"/>
+            <RowDefinition Height=".75*"/>
+            <RowDefinition Height="1.25*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width=".75*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Name="l_name" Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="UserName:" Margin="5"/>
+        <TextBox Name="t_name" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5"/>
+
+        <Label Name="l_location" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Location:" Margin="5"/>
+        <TextBox Name="t_location" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5"/>
+        
+        <Label Name="l_debug" Grid.Row="2" Grid.Column="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="DebugMode:" Margin="5"/>
+        <CheckBox Name="cb_debug" Grid.Row="2" Grid.Column="1" VerticalContentAlignment="Center" Margin="5"/>
+
+        <Label Name="l_timeout" Grid.Row="3" Grid.Column="0" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Timeout:" Margin="5,20,5,20"/>
+        <TextBox Name="t_timeout" Grid.Row="3" Grid.Column="1" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5,20,5,20"/>
+
+        <Label Name="l_Host" Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Host:" Margin="5"/>
+        <TextBox Name="t_Host" Grid.Row="0" Grid.Column="4" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5"/>
+
+        <Label Name="l_Port" Grid.Row="1" Grid.Column="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Port:" Margin="5"/>
+        <TextBox Name="t_Port" Grid.Row="1" Grid.Column="4" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5"/>
+
+        <Label Name="l_Protocols" Grid.Row="2" Grid.Column="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Protocols:" Margin="5"/>
+        <ComboBox Name="c_Protocols" Grid.Row="2" Grid.Column="4" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="5" SelectedIndex="0" SelectionChanged="c_Protocols_SelectionChanged">
+            <ComboBoxItem Name="i_WHOIS" Content="WHOIS"/>
+            <ComboBoxItem Name="i_H9" Content="HTTP/0.9"/>
+            <ComboBoxItem Name="i_H0" Content="HTTP/1.0"/>
+            <ComboBoxItem Name="i_H1" Content="HTTP/1.1"/>
+        </ComboBox>
+
+        <Label Name="l_output" Grid.Row="2" Grid.Column="2" VerticalContentAlignment="Top" HorizontalContentAlignment="Center" Content="Output" Margin="0,-70,0,0"/>
+        <TextBox Name="t_output" Grid.Row="3" Grid.Column="2" TextAlignment="Center" VerticalContentAlignment="Center" Margin="5,-90,5,0" IsReadOnly="True" TextWrapping="Wrap" SelectionOpacity="0.7"/>
+
+        <Button Name="B_Run" Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Send Request" Margin="50,20,50,20" Click="B_Run_Click_1"/>
+    </Grid>
+</Window>

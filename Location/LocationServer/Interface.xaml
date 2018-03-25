@@ -1,0 +1,39 @@
+﻿<Window x:Class="LocationServer.Interface"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             ResizeMode="CanMinimize" Title="Location Server" WindowStartupLocation="CenterScreen"
+             Width="750" Height="300">
+    <Grid Background="AliceBlue">
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".75*"/>
+            <RowDefinition Height=".75*"/>
+            <RowDefinition Height=".75*"/>
+            <RowDefinition Height="1.25*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width=".75*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Name="l_database" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Database Path:" Margin="5"/>
+        <TextBox Name="t_database" Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5" TextChanged="t_database_TextChanged"/>
+
+        <Label Name="l_logfile" Grid.Row="1" Grid.Column="1" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="LogFile Path:" Margin="5"/>
+        <TextBox Name="t_logfile" Grid.Row="1" Grid.Column="2" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5" TextChanged="t_logfile_TextChanged"/>
+
+        <Label Name="l_debug" Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="DebugMode:" Margin="5"/>
+        <CheckBox Name="cb_debug" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Center" Margin="5"/>
+
+        <Label Name="l_timeout" Grid.Row="1" Grid.Column="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Content="Timeout:" Margin="5"/>
+        <TextBox Name="t_timeout" Grid.Row="1" Grid.Column="4" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="5" TextChanged="t_timeout_TextChanged"/>
+
+        <Label Name="l_output" Grid.Row="2" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Output"/>
+        <TextBox Name="t_output" Grid.Row="3" Grid.Column="2" TextAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" SelectionOpacity="0.7" Margin="-50,0,-50,0"/>
+
+        <Button Name="B_Run" Grid.Row="4" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Start Server" Margin="50,20,50,20" Click="B_Run_Click_1"/>
+    </Grid>
+</Window>

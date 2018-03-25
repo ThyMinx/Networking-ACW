@@ -1,0 +1,529 @@
+﻿using System;
+using System.Net.Sockets;
+using System.IO;
+using System.Collections.Generic;
+using System.Windows;
+
+namespace Location
+{
+    class Client
+    {
+        enum ProtocolType
+        {
+            HTTP1,
+            HTTP0,
+            HTTP9,
+            WHOIS
+        }
+
+        public static bool debugMode = false;
+
+        [STAThread]
+        static void Main(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Application ui = new Application();
+                ui.Run(new Interface());
+            }
+
+            try
+            {
+                TcpClient client = new TcpClient(); //Creating a client object. (Called client for ease of understanding)
+
+                //Connect method is part of Socket Library.
+                //This section connects the client to a server.
+                string defaultServer = "whois.net.dcs.hull.ac.uk";
+                string server = null;
+
+                int defaultPort = 43;
+                int port = 0;
+
+                int timeout = 1000;
+
+                ProtocolType type = ProtocolType.WHOIS;
+
+                List<string> inputs = new List<string>();
+
+                for (int i = 0; i < args.Length; i++)
+                {
+                    if (args[i] == "-d")
+                    {
+                        debugMode = true;
+                        Console.WriteLine("Debug mode enabled.");
+                        continue;
+                    }
+                    else if (args[i] == "-p")
+                    {
+                        //Sets the port
+                        try
+                        {
+                            port = Int32.Parse(args[i + 1]);
+                            if (debugMode) Console.WriteLine("Port: " + port);
+                        }
+                        catch
+                        {
+                            if (debugMode) Console.WriteLine("No port given. Using default port: " + defaultPort);
+                            continue;
+                        }
+                    }
+                    else if (args[i] == "-t")
+                    {
+                        try
+                        {
+                            timeout = Int32.Parse(args[i + 1]);
+                            if (debugMode) Console.WriteLine("Timeout time: " + timeout + "ms");
+                        }
+                        catch
+                        {
+                            if (debugMode) Console.WriteLine("No timeout time given. Using default timeout time: " + timeout + "ms");
+                            continue;
+                        }
+                    }
+                    else if (args[i] == "-h")
+                    {
+                        //Sets the server address
+                        try
+                        {
+                            server = args[i + 1].ToString();
+                            if (debugMode) Console.WriteLine("Hostname: " + server);
+                        }
+                        catch
+                        {
+                            if (debugMode) Console.WriteLine("No hostname given. Using default hostname: " + defaultServer);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (args[i] != "-h1" && args[i] != "-h0" && args[i] != "-h9")
+                        {
+                            //Adds everything else as arguments to inputs
+                            if (i == 0 && args[i] != "-h" && args[i] != "-p" && args[i] != "-t" && args[i] != "-d")
+                            {
+                                inputs.Add(args[i]);
+                            }
+                            else if (args[i - 1] != "-h" && args[i - 1] != "-p" && args[i - 1] != "-t" && args[i - 1] != "-d")
+                            {
+                                inputs.Add(args[i]);
+                            }
+                        }
+                        else
+                        {
+                            //Sets the protocol type
+                            switch (args[i])
+                            {
+                                case "-h1":
+                                    //HTTP 1.1 protocol
+                                    type = ProtocolType.HTTP1;
+                                    if (debugMode) Console.WriteLine("Protocol is: HTTP/1.1");
+                                    break;
+                                case "-h0":
+                                    //HTTP 1.0 protocol
+                                    type = ProtocolType.HTTP0;
+                                    if (debugMode) Console.WriteLine("Protocol is: HTTP/1.0");
+                                    break;
+                                case "-h9":
+                                    //HTTP 0.9 protocol
+                                    type = ProtocolType.HTTP9;
+                                    if (debugMode) Console.WriteLine("Protocol is: HTTP/0.9");
+                                    break;
+                                default:
+                                    //WHOIS protocol
+                                    type = ProtocolType.WHOIS;
+                                    if (debugMode) Console.WriteLine("Protocol is: WHOIS");
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                //Set Port and Server
+                if (server != null)
+                {
+                    if (port == 0)
+                    {
+                        port = defaultPort;
+                        //If the server only is set in arguments.
+                    }
+                }
+                else
+                {
+                    server = defaultServer;
+                    if (port == 0)
+                    {
+                        port = defaultPort;
+                        //If neither are set in arguments.
+                    }
+                }
+
+                if (inputs.Count == 0)
+                {
+                    if (debugMode) Console.WriteLine("No arguments given.");
+                }
+                else
+                {
+                    client.Connect(server, port); //Connects to the client on the HOSTNAME and PORT
+
+                    if (timeout != 0)
+                    {
+                        client.ReceiveTimeout = timeout; //Sets the timeout
+                        client.SendTimeout = timeout; //Sets the timeout
+                    }
+
+                    //Write
+                    try
+                    {
+                        Write(client, inputs, type, server); //Do the write method
+                    }
+                    catch (Exception e)
+                    {
+                        if (debugMode) Console.WriteLine("Failed to write to server.");
+                        if (debugMode) Console.WriteLine("\n" + e.ToString());
+                    }
+                    //Read
+                    try
+                    {
+                        Read(client, inputs, type); //Do the read method
+                    }
+                    catch (Exception e)
+                    {
+                        if (debugMode) Console.WriteLine("Failed to read from server.");
+                        if (debugMode) Console.WriteLine("\n" + e.ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                if (debugMode) Console.WriteLine("This should never be reached! An error must have occurred.");
+                if (debugMode) Console.WriteLine("\n" + e.ToString());
+            }
+        }
+
+        static void Read(TcpClient client, List<string> inputs, ProtocolType type)
+        {
+            StreamReader sr = new StreamReader(client.GetStream()); //Reads from stream.
+
+            string answer = ""; //This is where all the data gets stored into one string.
+            string temp; //This is a temporary string that gets rewritten for each line read.
+            List<string> lines = new List<string>(); //This list is a list of strings, each element is a line read in.
+            try //Read
+            {
+                while ((temp = sr.ReadLine()) != null) //If the read line is null don't continue else do...
+                {
+                    lines.Add(temp); //Add to the lines list of strings. 
+                }
+                answer = string.Join("\n", lines); //Joing all the strings into one.
+            }
+            catch (IOException) //If it can't read anymore it will catch an IOException
+            {
+                if (lines.Count > 0) //If it has read some data.
+                {
+                    answer = string.Join("\n", lines); //Join all the strings into one.
+                    if (debugMode) Console.WriteLine("Data received: " + answer);
+                }
+                else
+                {
+                    answer = "Client timed out."; //If no data was read then the client timed out.
+                    Console.WriteLine(answer);
+                    return;
+                }
+            }
+
+            string[] args = answer.Split(new char[] { '\n' }); //Splits the string up into a list of args based on each new line.
+
+            if (args[0].Contains("404") && type != ProtocolType.WHOIS) //If the first line back contains 404 it means that there was an error.
+            {
+                Console.WriteLine("ERROR: no entries found");
+            }
+            else
+            {
+                switch (type) //Depending on the protocol type depends on the protocol sequence read.
+                {
+                    case ProtocolType.HTTP1: //For HTTP1.1
+                        try
+                        {
+                            if (args[0].Contains("OK"))
+                            {
+                                if (inputs.Count == 2) //If there were two inputs then the location has been UPDATED
+                                {
+                                    Console.WriteLine(inputs[0] + " location changed to be " + inputs[1]);
+                                }
+                                else //Else the location is location.
+                                {
+                                    List<string> header = new List<string>(); //A list of strings which will be full of all the header.
+                                    List<string> locationList = new List<string>(); //A list of strings which will be full of the rest, which should be the location.
+                                    bool head = true; //This boolean is while it is reading the header it = true
+                                    for (int i = 0; i < lines.Count; i++)
+                                    {
+                                        if (string.IsNullOrWhiteSpace(args[i]) && head) //If it's still reading the header and the line it's trying to read is null or whitespace then the header has finished.
+                                        {
+                                            head = false; //Reading the header is now = false
+                                        }
+                                        else if (head) //If it is currently reading the header
+                                        {
+                                            header.Add(lines[i]); //Add this line being read to the header
+                                        }
+
+                                        if (!head) //If it isn't reading the header
+                                        {
+                                            locationList.Add(lines[i]); //Add this line to the locationList
+                                        }
+                                    }
+
+                                    string location = string.Join("\n", locationList); //The location is every line in locationList so join them together.
+
+                                    Console.WriteLine(inputs[0] + " is " + location.Trim());
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            type = ProtocolType.HTTP0;
+                        }
+                        break;
+                    case ProtocolType.HTTP0: //For HTTP1.0
+                        try
+                        {
+                            if (args[0].Contains("OK"))
+                            {
+                                if (inputs.Count == 2) //If there were two inputs then the location has been UPDATED
+                                {
+                                    Console.WriteLine(inputs[0] + " location changed to be " + inputs[1]);
+                                }
+                                else //Else the location is location.
+                                {
+                                    string location = null; //Location = null.
+                                    for (int i = 0; i < lines.Count; i++)
+                                    {
+                                        if (string.IsNullOrWhiteSpace(args[i])) //If the current line being read = null
+                                        {
+                                            location = args[i + 1]; //Location = the next line.
+                                            break; //Break out of the loop.
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    Console.WriteLine(inputs[0] + " is " + location.Trim());
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            type = ProtocolType.HTTP9;
+                        }
+                        break;
+                    case ProtocolType.HTTP9: //For HTTP0.9
+                        try
+                        {
+                            if (args[0].Contains("OK"))
+                            {
+                                if (inputs.Count == 2) //If there were two inputs then the location has been UPDATED
+                                {
+                                    Console.WriteLine(inputs[0] + " location changed to be " + inputs[1]);
+                                }
+                                else //Else the location is location.
+                                {
+                                    string location = null; //Location = null.
+                                    for (int i = 0; i < lines.Count; i++)
+                                    {
+                                        if (string.IsNullOrWhiteSpace(args[i])) //If the current line being read = null
+                                        {
+                                            try
+                                            {
+                                                location = args[i + 1]; //Location = the next line.
+                                            }
+                                            catch
+                                            {
+                                                location = "this is the problem";
+                                            }
+                                            break; //Break out of the loop.
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    Console.WriteLine(inputs[0] + " is " + location.Trim());
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            type = ProtocolType.WHOIS;
+                        }
+                        break;
+                    case ProtocolType.WHOIS: //For the default WHOIS
+                        try
+                        {
+                            if (args.Length > 1)
+                            {
+                                if (args[0].Contains("OK"))
+                                {
+                                    if (inputs.Count == 2) //If there were two inputs then the location has been UPDATED
+                                    {
+                                        Console.WriteLine(inputs[0] + " location changed to be " + inputs[1]);
+                                    }
+                                    else //Else the location is location.
+                                    {
+                                        string location = null; //Location = null.
+                                        for (int i = 0; i < lines.Count; i++)
+                                        {
+                                            if (string.IsNullOrWhiteSpace(args[i])) //If the current line being read = null
+                                            {
+                                                try
+                                                {
+                                                    location = args[i + 1]; //Location = the next line.
+                                                }
+                                                catch
+                                                {
+                                                    location = "this is the problem";
+                                                }
+                                                break; //Break out of the loop.
+                                            }
+                                            else
+                                            {
+                                                continue;
+                                            }
+                                        }
+                                        Console.WriteLine(inputs[0] + " is " + location.Trim());
+                                    }
+                                }
+                                break;
+                            }
+                            switch (answer)
+                            {
+                                case "OK\r\n":
+                                    if (inputs.Count == 2)
+                                    {
+                                        Console.WriteLine(inputs[0] + " location changed to be " + inputs[1]);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(inputs[0] + " is " + answer.Trim());
+                                    }
+                                    break;
+                                case "OK":
+                                    if (inputs.Count == 2)
+                                    {
+                                        Console.WriteLine(inputs[0] + " location changed to be " + inputs[1]);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(inputs[0] + " is " + answer.Trim());
+                                    }
+                                    break;
+                                case "ERROR: no entries found\r\n":
+                                    Console.WriteLine(answer.Trim());
+                                    break;
+                                case "ERROR: no entries found":
+                                    Console.WriteLine(answer.Trim());
+                                    break;
+                                default:
+                                    Console.WriteLine(inputs[0] + " is " + answer.Trim());
+                                    break;
+                            }
+                        }
+                        catch
+                        {
+                            type = ProtocolType.HTTP1;
+                        }
+                        break;
+                }
+            }
+
+        }
+
+        static void Write(TcpClient client, List<string> inputs, ProtocolType type, string server)
+        {
+            StreamWriter sw = new StreamWriter(client.GetStream()); //Writes to stream.
+
+            //Writing depending on the protocol
+            switch (type)
+            {
+                case ProtocolType.HTTP1:
+                    switch (inputs.Count)
+                    {
+                        case 1: //If there is only one argument it should LOOKUP the location of a student.
+                            sw.WriteLine("GET" + " " + "/?" + "name=" + inputs[0] + " " + "HTTP/1.1");
+                            sw.WriteLine("Host: " + server);
+                            sw.WriteLine(""); //The inputs[0] is whatever the user typed.
+                            if (debugMode) Console.WriteLine("GET /?name=" + inputs[0] + " HTTP/1.1\r\nHost: " + server + "\r\n");
+                            break;
+                        case 2: //If there are two arguments it should UPDATE the location.
+                            int length = inputs[0].ToCharArray().Length + inputs[1].ToCharArray().Length + 15;
+
+                            sw.WriteLine("POST" + " " + "/" + " " + "HTTP/1.1");
+                            sw.WriteLine("Host: " + server);
+                            sw.WriteLine("Content-Length:" + " " + length.ToString());
+                            sw.WriteLine("");
+                            sw.WriteLine("name=" + inputs[0] + "&" + "location=" + inputs[1]); //The inputs[0] and inputs[1] is whatever the user typed.
+                            if (debugMode) Console.WriteLine("POST / HTTP/1.1\r\nHost: " + server + "\r\nContent-Length: " + length.ToString() + "\r\n\r\nname=" + inputs[0] + "&location=" + inputs[1]);
+                            break;
+                        default: //If arguments are too many or too little.
+                            if (debugMode) Console.WriteLine("Wrong amount of arguments!"); //If the wrong amount of arguments are supplied.
+                            break;
+                    }
+                    break;
+                case ProtocolType.HTTP0:
+                    switch (inputs.Count)
+                    {
+                        case 1: //If there is only one argument it should LOOKUP the location of a student.
+                            sw.WriteLine("GET" + " " + "/?" + inputs[0] + " " + "HTTP/1.0");
+                            sw.WriteLine(""); //The inputs[0] is whatever the user typed.
+                            if (debugMode) Console.WriteLine("GET /?" + inputs[0] + " HTTP/1.0\r\n");
+                            break;
+                        case 2: //If there are two arguments it should UPDATE the location.
+                            sw.WriteLine("POST" + " " + "/" + inputs[0] + " " + "HTTP/1.0");
+                            sw.WriteLine("Content-Length:" + " " + inputs[1].ToCharArray().Length.ToString());
+                            sw.WriteLine("");
+                            sw.WriteLine(inputs[1]); //The inputs[0] and inputs[1] is whatever the user typed.
+                            if (debugMode) Console.WriteLine("POST /" + inputs[0] + " HTTP/1.0\r\nContent-Length: " + inputs[1].ToCharArray().Length.ToString() + "\r\n\r\n" + inputs[1]);
+                            break;
+                        default: //If arguments are too many or too little.
+                            if (debugMode) Console.WriteLine("Wrong amount of arguments!"); //If the wrong amount of arguments are supplied.
+                            break;
+                    }
+                    break;
+                case ProtocolType.HTTP9:
+                    switch (inputs.Count)
+                    {
+                        case 1: //If there is only one argument it should LOOKUP the location of a student.
+                            sw.WriteLine("GET" + " " + "/" + inputs[0]); //The inputs[0] is whatever the user typed.
+                            if (debugMode) Console.WriteLine("GET /" + inputs[0]);
+                            break;
+                        case 2: //If there are two arguments it should UPDATE the location.
+                            sw.WriteLine("PUT" + " " + "/" + inputs[0]);
+                            //sw.WriteLine();
+                            sw.WriteLine(inputs[1]); //The inputs[0] and inputs[1] is whatever the user typed.
+                            if (debugMode) Console.WriteLine("PUT /" + inputs[0] + "\r\n\r\n" + inputs[1]);
+                            break;
+                        default: //If arguments are too many or too little.
+                            if (debugMode) Console.WriteLine("Wrong amount of arguments!"); //If the wrong amount of arguments are supplied.
+                            break;
+                    }
+                    break;
+                case ProtocolType.WHOIS:
+                    switch (inputs.Count)
+                    {
+                        case 1: //If there is only one argument it should LOOKUP the location of a student.
+                            sw.WriteLine(inputs[0]); //The inputs[0] is whatever the user typed.
+                            if (debugMode) Console.WriteLine(inputs[0]);
+                            break;
+                        case 2: //If there are two arguments it should UPDATE the location.
+                            sw.WriteLine(inputs[0] + " " + inputs[1]); //The inputs[0] and inputs[1] is whatever the user typed.
+                            if (debugMode) Console.WriteLine(inputs[0] + " " + inputs[1]);
+                            break;
+                        default: //If arguments are too many or too little.
+                            if (debugMode) Console.WriteLine("Wrong amount of arguments!"); //If the wrong amount of arguments are supplied.
+                            break;
+                    }
+                    break;
+            }
+
+            sw.Flush(); //Empties the buffer.
+        }
+    }
+}
